@@ -81,3 +81,5 @@ window.onload = function() {
   }
 };
 
+const CLIENT_ID = '9e2afa531db0497d8f66a6c760e37e7c'
+const REDIRECT_URI = 'https://jolka.github.io/spotytrends/callback'
