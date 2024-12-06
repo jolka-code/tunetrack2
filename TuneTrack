@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpotyTrends</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Welkom bij SpotyTrends!</h1>
+  <p>Log in met je Spotify-account om je meest beluisterde nummers te zien.</p>
+  <button id="loginBtn">Login met Spotify</button>
+  <div id="trends" style="display:none;">
+    <h2>Jouw meest beluisterde nummers</h2>
+    <ul id="songList"></ul>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
+
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+h1 {
+  color: #1DB954; /* Spotify groen */
+}
+
+button {
+  background-color: #1DB954;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1ed760;
+}
+
+#trends {
+  margin-top: 20px;
+}
+// Client ID en Redirect URI van je Spotify-app
+const CLIENT_ID = 'JOUW_CLIENT_ID';
+const REDIRECT_URI = 'JOUW_REDIRECT_URI';
+
+const AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=user-top-read`;
+
+document.getElementById('loginBtn').addEventListener('click', function() {
+  window.location.href = AUTH_URL;
+});
+
+function fetchTopTracks(token) {
+  fetch('https://api.spotify.com/v1/me/top/artists?limit=10', {
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    const trackList = document.getElementById('songList');
+    trackList.innerHTML = '';
+    data.items.forEach(track => {
+      const li = document.createElement('li');
+      li.textContent = `${track.name} - Luisterd: ${track.popularity} keer`;
+      trackList.appendChild(li);
+    });
+    document.getElementById('trends').style.display = 'block';
+  })
+  .catch(error => console.error('Error fetching data:', error));
+}
+
+window.onload = function() {
+  const urlParams = new URLSearchParams(window.location.hash.substring(1));
+  const token = urlParams.get('access_token');
+  
+  if (token) {
+    fetchTopTracks(token);
+  }
+};
+
