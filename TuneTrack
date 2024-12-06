@@ -42,18 +42,14 @@ button:hover {
 #trends {
   margin-top: 20px;
 }
-// Client ID en Redirect URI van je Spotify-app
-const CLIENT_ID = 'JOUW_CLIENT_ID';
-const REDIRECT_URI = 'JOUW_REDIRECT_URI';
-
+const CLIENT_ID = '9e2afa531db0497d8f66a6c760e37e7c';
+const REDIRECT_URI = 'https://jolka.github.io/spotytrends/callback';  
+// De URL voor de Spotify Authorization
 const AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=user-top-read`;
 
-document.getElementById('loginBtn').addEventListener('click', function() {
-  window.location.href = AUTH_URL;
-});
-
+// Functie om de top tracks van de gebruiker op te halen
 function fetchTopTracks(token) {
-  fetch('https://api.spotify.com/v1/me/top/artists?limit=10', {
+  fetch('https://api.spotify.com/v1/me/top/tracks?limit=10', {
     headers: {
       'Authorization': 'Bearer ' + token
     }
@@ -61,16 +57,16 @@ function fetchTopTracks(token) {
   .then(response => response.json())
   .then(data => {
     const trackList = document.getElementById('songList');
-    trackList.innerHTML = '';
+    trackList.innerHTML = '';  
     data.items.forEach(track => {
       const li = document.createElement('li');
-      li.textContent = `${track.name} - Luisterd: ${track.popularity} keer`;
+      li.textContent = `${track.name} - Aantal keren beluisterd: ${track.popularity}`;
       trackList.appendChild(li);
     });
-    document.getElementById('trends').style.display = 'block';
-  })
+    document.getElementById('trends').style.display = 'block';  
   .catch(error => console.error('Error fetching data:', error));
 }
+
 
 window.onload = function() {
   const urlParams = new URLSearchParams(window.location.hash.substring(1));
@@ -81,5 +77,6 @@ window.onload = function() {
   }
 };
 
-const CLIENT_ID = '9e2afa531db0497d8f66a6c760e37e7c'
-const REDIRECT_URI = 'https://jolka.github.io/spotytrends/callback'
+document.getElementById('loginBtn').addEventListener('click', function() {
+  window.location.href = AUTH_URL;  // Stuur de gebruiker naar de Spotify loginpagina
+});
